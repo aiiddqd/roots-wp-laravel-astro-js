@@ -1,76 +1,76 @@
 ---
-title: "Astro-фронтенд для wp-roots (SSG + WP REST API)"
+title: "Astro frontend for wp-roots (SSG + WP REST API)"
 status: implementing
 created: 2026-08-28
 ---
 
-# RFC: Astro-фронтенд для wp-roots (SSG + WP REST API)
+# RFC: Astro frontend for wp-roots (SSG + WP REST API)
 
-## Предпосылки
+## Prerequisites
 
-- тут стоит бэкенд на вордпресс рутс /Users/aa/Projects/4px/projects/wp-roots/wp
-- тут надо поднять сайт на базе Астро /Users/aa/Projects/4px/projects/wp-roots/docs/rfc/astro.md
-- используем актуальную версию Астро и Daisy Ui https://daisyui.com/docs/install/astro/
+- the WordPress Roots backend lives here: /Users/aa/Projects/4px/projects/wp-roots/roots
+- the Astro-based site has to be brought up here: /Users/aa/Projects/4px/projects/wp-roots/docs/rfc/astro.md
+- we use the current versions of Astro and DaisyUI https://daisyui.com/docs/install/astro/
 
-## Вводные
+## Background
 
-Поднимаем отдельный фронтенд на Astro (последняя стабильная версия) с UI-китом DaisyUI поверх существующего headless-бэкенда `wp-roots` (Bedrock + Acorn). Фронтенд живёт в `wp-roots/astro/` (директория уже заведена, пустая). Контент для главной страницы забирается из WordPress через штатный WP REST API, без дополнительных плагинов. Сборка — статическая (SSG): страница генерируется на этапе `astro build` из данных, актуальных на момент сборки; при изменении контента в WP фронтенд нужно пересобрать заново.
+We are bringing up a separate frontend on Astro (latest stable version) with the DaisyUI UI kit on top of the existing headless `wp-roots` backend (Bedrock + Acorn). The frontend lives in `wp-roots/astro/` (the directory already exists and is empty). Content for the homepage is pulled from WordPress through the stock WP REST API, without extra plugins. The build is static (SSG): the page is generated at `astro build` time from the data current at that moment; when content changes in WP, the frontend has to be rebuilt.
 
-## Назначение и цели
+## Purpose and goals
 
-Цель — проверить связку Astro + DaisyUI + WP REST API как headless-фронтенд поверх Bedrock/Acorn-бэкенда в стеке 4px (аналогично тому, как `wp-roots.md` проверял связку Bedrock + Acorn + Blade). Это соло-эксперимент, формального ревью не требуется. Результат должен показать:
+The goal is to validate the Astro + DaisyUI + WP REST API combination as a headless frontend on top of a Bedrock/Acorn backend in the 4px stack (much like `wp-roots.md` validated the Bedrock + Acorn + Blade combination). This is a solo experiment, no formal review required. The result should show:
 
-- как Astro-проект встраивается в существующий lerd-воркспейс `wp-roots` рядом с PHP-бэкендом;
-- как получать и рендерить данные WordPress через REST API без плагинов (WPGraphQL и т.п.) на этапе сборки;
-- работает ли связка технически: сборка, деплой в lerd, доступность страницы в браузере с реальным контентом из WP.
+- how an Astro project fits into the existing `wp-roots` lerd workspace next to the PHP backend;
+- how to fetch and render WordPress data through the REST API without plugins (WPGraphQL and the like) at build time;
+- whether the combination works technically: build, deploy into lerd, page reachable in the browser with real content from WP.
 
-## Составляющие и особенности
+## Components and specifics
 
-- **Astro-проект**: инициализация в `wp-roots/astro/` (`npm create astro@latest`), актуальная стабильная версия Astro.
-- **DaisyUI**: подключение по официальной инструкции https://daisyui.com/docs/install/astro/ (Tailwind CSS + DaisyUI plugin).
-- **Источник данных**: WP REST API бэкенда `wp-roots` (`http://wp-roots.localhost/wp-json/wp/v2/...`). Без кастомных REST-эндпоинтов и без GraphQL — используем то, что WP отдаёт из коробки (`/pages`, при необходимости `/posts`).
-- **Рендеринг**: только SSG. Данные запрашиваются на этапе сборки (top-level `fetch` в `.astro`-файле или в `getStaticPaths`), HTML отдаётся статикой. Без Node-сервера в рантайме, без ISR/on-demand рендеринга в этой итерации.
-- **Скоуп v1**: одна страница — главная (`/`). Она рендерит последний опубликованный пост блога (`/wp-json/wp/v2/posts?per_page=1`), а не произвольную WP-страницу (Page) — источник контента зафиксирован.
-- **Локальное окружение**: Astro **не регистрируется как отдельный lerd-сайт**. Локальная проверка — через `astro dev`/`astro build` + `astro preview` напрямую (Node), без интеграции в lerd-воркспейс `wp-roots` на этом этапе.
-- **Типизация**: ответы WP REST API типизируются через TypeScript-интерфейсы (минимум — форма объекта `Post` для полей, которые реально используются: `id`, `date`, `slug`, `link`, `title.rendered`, `content.rendered`, `excerpt.rendered`).
-- **Ограничения v1**: без аутентификации к WP REST API (публичный контент), без ревалидации/вебхуков на пересборку, без CI/деплоя, без интеграции в lerd.
+- **Astro project**: initialized in `wp-roots/astro/` (`npm create astro@latest`), latest stable Astro version.
+- **DaisyUI**: installed following the official instructions https://daisyui.com/docs/install/astro/ (Tailwind CSS + the DaisyUI plugin).
+- **Data source**: the WP REST API of the `wp-roots` backend (`http://wp-roots.localhost/wp-json/wp/v2/...`). No custom REST endpoints and no GraphQL — we use what WP provides out of the box (`/pages`, and `/posts` if needed).
+- **Rendering**: SSG only. Data is requested at build time (a top-level `fetch` in an `.astro` file or in `getStaticPaths`), and the HTML is served statically. No Node server at runtime, no ISR/on-demand rendering in this iteration.
+- **v1 scope**: a single page — the homepage (`/`). It renders the latest published blog post (`/wp-json/wp/v2/posts?per_page=1`) rather than an arbitrary WP Page — the content source is fixed.
+- **Local environment**: Astro is **not registered as a separate lerd site**. Local verification goes through `astro dev`/`astro build` + `astro preview` directly (Node), without integration into the `wp-roots` lerd workspace at this stage.
+- **Typing**: WP REST API responses are typed with TypeScript interfaces (at minimum the shape of the `Post` object for the fields actually used: `id`, `date`, `slug`, `link`, `title.rendered`, `content.rendered`, `excerpt.rendered`).
+- **v1 limitations**: no authentication to the WP REST API (public content), no revalidation/webhooks to trigger a rebuild, no CI/deploy, no lerd integration.
 
-## Критерии приемки
+## Acceptance criteria
 
-- [x] В `wp-roots/astro/` есть рабочий Astro-проект актуальной стабильной версии, `astro build` проходит без ошибок.
-- [x] DaisyUI подключён по официальной инструкции и применяется хотя бы к одному видимому элементу главной страницы (например, кнопке или карточке) — визуально подтверждается, что стили DaisyUI активны.
-- [x] Главная страница (`/`) на этапе сборки запрашивает последний пост через `/wp-json/wp/v2/posts?per_page=1` и рендерит его заголовок/контент.
-- [x] Ответ WP REST API типизирован (TypeScript-интерфейс `Post` с используемыми полями), без `any`.
-- [x] Собранный сайт открывается в браузере локально (`astro preview`, без lerd) и показывает реальный контент последнего поста, а не заглушку.
-- [x] Публикация нового поста в WP-админке и повторный `astro build` отражаются на итоговой HTML-странице.
-- [x] В `wp-roots/README.md` добавлена короткая заметка про Astro-фронтенд (по аналогии с остальными разделами README), фиксирующая нетривиальные находки по интеграции (если такие появятся).
+- [x] `wp-roots/astro/` contains a working Astro project on the latest stable version, and `astro build` completes without errors.
+- [x] DaisyUI is installed following the official instructions and applied to at least one visible element of the homepage (a button or a card, for example) — visually confirming that DaisyUI styles are active.
+- [x] The homepage (`/`) requests the latest post at build time through `/wp-json/wp/v2/posts?per_page=1` and renders its title/content.
+- [x] The WP REST API response is typed (a TypeScript `Post` interface with the fields used), without `any`.
+- [x] The built site opens in a browser locally (`astro preview`, without lerd) and shows the real content of the latest post rather than a placeholder.
+- [x] Publishing a new post in the WP admin and running `astro build` again is reflected in the resulting HTML page.
+- [x] A short note about the Astro frontend has been added to `wp-roots/README.md` (in line with the other README sections), recording the non-trivial findings about the integration (if any turned up).
 
-## Дорожная карта
+## Roadmap
 
-1. Инициализировать Astro-проект в `wp-roots/astro/` (TypeScript template), проверить `astro dev`/`astro build` на пустом шаблоне.
-2. Подключить DaisyUI по официальному гайду, убедиться, что стили применяются.
-3. Завести TypeScript-тип `Post` для нужных полей ответа `/wp-json/wp/v2/posts` и написать typed fetch последнего поста на этапе сборки.
-4. Сверстать главную страницу: рендер заголовка/контента последнего поста с базовой разметкой на DaisyUI-компонентах.
-5. Собрать (`astro build`) и проверить локально через `astro preview` (без регистрации в lerd): контент реального последнего поста виден на странице.
-6. Проверить сквозной сценарий: опубликовать новый пост в WP → `astro build` → изменение видно на странице.
-7. Зафиксировать находки и нетривиальные решения в `wp-roots/README.md`.
+1. Initialize the Astro project in `wp-roots/astro/` (TypeScript template), check `astro dev`/`astro build` on the empty template.
+2. Install DaisyUI following the official guide, make sure the styles are applied.
+3. Define a TypeScript `Post` type for the needed fields of the `/wp-json/wp/v2/posts` response and write a typed fetch of the latest post at build time.
+4. Build the homepage: render the title/content of the latest post with basic markup on DaisyUI components.
+5. Build (`astro build`) and check locally via `astro preview` (without registering in lerd): the content of the real latest post is visible on the page.
+6. Verify the end-to-end scenario: publish a new post in WP → `astro build` → the change is visible on the page.
+7. Record the findings and non-trivial decisions in `wp-roots/README.md`.
 
-## Итого и рекомендации
+## Summary and recommendations
 
-Эксперимент удался: Astro + DaisyUI + WP REST API поднимается как SSG-фронтенд поверх `wp-roots`, все критерии приёмки закрыты.
+The experiment succeeded: Astro + DaisyUI + WP REST API comes up as an SSG frontend on top of `wp-roots`, and all acceptance criteria are met.
 
-Что сделано (`wp-roots/astro/`):
-- Astro 7.2.9 (TS-шаблон `minimal`, `strict` tsconfig), `npx astro add tailwind` для Tailwind CSS v4 (`@tailwindcss/vite`).
-- DaisyUI 5.7.22 подключён как CSS-плагин: `@plugin "daisyui";` в `src/styles/global.css` — актуальный способ для DaisyUI 5 + Tailwind 4, отдельный `tailwind.config` не требуется.
-- Типизация ответа WP REST API — `src/lib/wp.ts` (`interface Post`, `fetchLatestPost()`), `npx astro check` проходит без ошибок и предупреждений.
-- Главная (`src/pages/index.astro`) на этапе сборки делает `fetch` к `http://wp-roots.localhost/wp-json/wp/v2/posts?per_page=1` и рендерит заголовок/дату/контент последнего поста в DaisyUI-карточке (`card`, `btn-primary`).
-- Сквозной сценарий проверен вручную: создан тестовый пост через `wp post create`, `astro build` подхватил его как последний, тестовый пост удалён (`wp post delete`) — в проде остаётся штатный "Hello world!".
-- Проверено без lerd: `astro build` + `astro preview` на порту 4321, `curl` подтвердил реальный контент и скомпилированные daisyui-правила в CSS. Открыть в браузере через MCP chrome-devtools не удалось — этот браузер не имеет доступа к `localhost` текущей машины (уже открытая вкладка resolves на неродственный сайт по тому же порту на своей стороне); визуальная проверка стилей DaisyUI сделана через анализ собранного HTML/CSS, а не скриншотом.
+What was done (`wp-roots/astro/`):
+- Astro 7.2.9 (the `minimal` TS template, `strict` tsconfig), `npx astro add tailwind` for Tailwind CSS v4 (`@tailwindcss/vite`).
+- DaisyUI 5.7.22 is wired up as a CSS plugin: `@plugin "daisyui";` in `src/styles/global.css` — the current approach for DaisyUI 5 + Tailwind 4, no separate `tailwind.config` needed.
+- Typing of the WP REST API response — `src/lib/wp.ts` (`interface Post`, `fetchLatestPost()`); `npx astro check` passes with no errors or warnings.
+- The homepage (`src/pages/index.astro`) does a build-time `fetch` to `http://wp-roots.localhost/wp-json/wp/v2/posts?per_page=1` and renders the title/date/content of the latest post in a DaisyUI card (`card`, `btn-primary`).
+- The end-to-end scenario was verified by hand: a test post was created via `wp post create`, `astro build` picked it up as the latest, and the test post was deleted (`wp post delete`) — the regular "Hello world!" remains in production.
+- Verified without lerd: `astro build` + `astro preview` on port 4321, and `curl` confirmed the real content and the compiled daisyui rules in the CSS. Opening it in a browser through MCP chrome-devtools did not work — that browser has no access to this machine's `localhost` (the already-open tab resolves to an unrelated site on the same port on its own side); the visual check of the DaisyUI styles was done by analyzing the built HTML/CSS rather than with a screenshot.
 
-Расширение на список записей блога, произвольные страницы по slug, ISR/SSR, регистрацию в lerd — предмет отдельной итерации.
+Extending this to a list of blog posts, arbitrary pages by slug, ISR/SSR, and registration in lerd is the subject of a separate iteration.
 
-## Открытые вопросы
+## Open questions
 
-- ~~Какая именно WP-страница (Page) выступает источником контента для Astro-главной?~~ Решено: не Page, а последний опубликованный пост блога (`/wp-json/wp/v2/posts?per_page=1`).
-- ~~Регистрировать ли `astro/` как отдельный lerd-сайт?~~ Решено: нет, в рамках этой итерации lerd не задействуется — проверка через `astro dev`/`astro preview` напрямую.
-- ~~Нужна ли типизация ответа WP REST API?~~ Решено: да, TypeScript-интерфейс для используемых полей.
+- ~~Which exact WP Page acts as the content source for the Astro homepage?~~ Resolved: not a Page, but the latest published blog post (`/wp-json/wp/v2/posts?per_page=1`).
+- ~~Should `astro/` be registered as a separate lerd site?~~ Resolved: no, lerd is not involved in this iteration — verification goes through `astro dev`/`astro preview` directly.
+- ~~Is typing of the WP REST API response needed?~~ Resolved: yes, a TypeScript interface for the fields used.
