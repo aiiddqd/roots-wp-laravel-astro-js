@@ -40,7 +40,7 @@ The skills use portable `SKILL.md` files. Codex reads the project skills from `.
 This project follows a code-driven operating model:
 
 - **Docs as Code.** The README, RFCs in [`docs/rfc/`](docs/rfc/), completed specs in [`docs/specs/`](docs/specs/), roadmap, and agent instructions are versioned alongside implementation. Architecture decisions and known constraints are reviewable changes, not tribal knowledge.
-- **Infrastructure as Code.** PHP dependencies and WordPress packages are declared in Composer files, frontend dependencies in `package.json` and its lockfile, and the local lerd services in [`wp/.lerd.yaml`](wp/.lerd.yaml). [`wp/.env.example`](wp/.env.example) documents the environment contract, while machine-specific secrets stay out of Git.
+- **Infrastructure as Code.** PHP dependencies and WordPress packages are declared in Composer files, frontend dependencies in `package.json` and its lockfile, and the local lerd services in [`roots/.lerd.yaml`](roots/.lerd.yaml). [`roots/.env.example`](roots/.env.example) documents the environment contract, while machine-specific secrets stay out of Git.
 
 Together, these conventions make local setup, implementation decisions, and AI-assisted work inspectable and reproducible from the repository itself.
 
@@ -71,7 +71,7 @@ Acorn is the Laravel bridge in this stack; it is not a separate Laravel CMS or a
 
 ## What is implemented
 
-- The WordPress backend lives in [`wp/`](wp/) and uses Bedrock, Acorn, PHP 8.3, and MySQL.
+- The WordPress backend lives in [`roots/`](roots/) and uses Bedrock, Acorn, PHP 8.3, and MySQL.
 - The Astro frontend lives in [`astro/`](astro/). It is an SSG site with a single home page.
 - During `astro build`, the home page requests the latest published WordPress post from `GET /wp-json/wp/v2/posts?per_page=1` and renders it as static HTML.
 - WordPress REST responses are typed in TypeScript; public content requires no authentication in this first iteration.
@@ -85,7 +85,7 @@ Acorn is the Laravel bridge in this stack; it is not a separate Laravel CMS or a
 ├── docs/
 │   ├── rfc/            # Design and implementation RFCs
 │   └── specs/          # Completed implementation summaries
-├── wp/                 # Bedrock root: WordPress, Acorn, Composer, web/
+├── roots/              # Bedrock root: WordPress, Acorn, Composer, web/
 ├── README.md
 └── ROADMAP.md
 ```
@@ -140,11 +140,11 @@ Publishing or editing a WordPress post is reflected in the frontend after the ne
 
 ### Bedrock paths
 
-Bedrock's document root is `wp/web`, and WordPress core is installed in `wp/web/wp`, not in the repository root. Use the `/wp/wp-admin/` URL above; `/wp-admin/` is not the WordPress admin route for this project.
+Bedrock's document root is `roots/web`, and WordPress core is installed in `roots/web/wp`, not in the repository root. Use the `/wp/wp-admin/` URL above; `/wp-admin/` is not the WordPress admin route for this project.
 
 ### WP-CLI
 
-Use the Composer-installed WP-CLI from the `wp/` directory. The globally installed Homebrew Phar does not work in this environment.
+Use the Composer-installed WP-CLI from the `roots/` directory. The globally installed Homebrew Phar does not work in this environment.
 
 ```bash
 ./vendor/bin/wp <command> --allow-root
