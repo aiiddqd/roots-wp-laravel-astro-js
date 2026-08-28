@@ -1,2 +1,4 @@
+domains:
+  - wp-roots
 services:
   - mysql

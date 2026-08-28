@@ -1,6 +1,6 @@
 ---
 title: "Мини-сайт стилиста: Astro SSG и личный кабинет /my через WordPress JWT"
-status: draft
+status: implementing
 created: 2026-08-28
 ---
 
