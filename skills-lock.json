@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "astro": {
+      "source": "astrolicious/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/astro/SKILL.md",
+      "computedHash": "ebefe26b231d32379c14e41a46c2de7b4b0184543bedab7febdabe4fb21fba4e"
+    },
+    "daisyui": {
+      "source": "saadeghi/daisyui",
+      "sourceType": "github",
+      "skillPath": "skills/daisyui/SKILL.md",
+      "computedHash": "f70ffeaaa312ed8ef46cf08fc6b0a524f3c7dcc36fc1ec531eba6ef45b259fe5"
+    },
+    "roots-ecosystem": {
+      "source": "aitormendez/roots-ecosystem-skill",
+      "sourceType": "github",
+      "skillPath": "roots-ecosystem/SKILL.md",
+      "computedHash": "aff5298f7558e555bb4f895162e775857e5fd066c6437e99f0d867bcb3fd467c"
+    }
+  }
+}

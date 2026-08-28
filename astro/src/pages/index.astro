@@ -1,0 +1,43 @@
+---
+import "../styles/global.css";
+import { fetchLatestPost } from "../lib/wp";
+
+const post = await fetchLatestPost();
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{post ? post.title.rendered : "wp-roots"}</title>
+	</head>
+	<body class="min-h-screen bg-base-200 flex items-center justify-center p-8">
+		{
+			post ? (
+				<article class="card w-full max-w-2xl bg-base-100 shadow-xl">
+					<div class="card-body">
+						<h1 class="card-title text-3xl" set:html={post.title.rendered} />
+						<p class="text-sm opacity-60">
+							{new Date(post.date).toLocaleDateString("ru-RU", {
+								year: "numeric",
+								month: "long",
+								day: "numeric",
+							})}
+						</p>
+						<div class="prose max-w-none" set:html={post.content.rendered} />
+						<div class="card-actions justify-end">
+							<a href={post.link} class="btn btn-primary">
+								Открыть на сайте
+							</a>
+						</div>
+					</div>
+				</article>
+			) : (
+				<p class="text-lg">В блоге пока нет опубликованных постов.</p>
+			)
+		}
+	</body>
+</html>

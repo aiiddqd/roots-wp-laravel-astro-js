@@ -1,0 +1,1 @@
+/Users/aa/Projects/4px/projects/wp-roots/wp/web/app/plugins/query-monitor/wp-content/db.php
