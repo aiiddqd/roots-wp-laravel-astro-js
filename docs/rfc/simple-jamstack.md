@@ -6,6 +6,10 @@ created: 2026-08-28
 
 # RFC: Мини-сайт стилиста — Astro SSG + WordPress JWT-кабинет
 
+## todo
+
+- [ ] start simple JAM Stack SSG - one page + my account page with JWT auth from WP BE
+
 ## Предпосылки
 
 - тут стоит бэкенд на вордпресс рутс /Users/aa/Projects/4px/projects/wp-roots/wp
