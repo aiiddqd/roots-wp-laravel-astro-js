@@ -9,7 +9,7 @@ the way are in [`README.md`](README.md); architectural decisions live in the RFC
 ## Structure
 
 ```
-wp-roots/
+./
 ├── README.md            # pitfalls found in backend/lerd/Acorn (read this first)
 ├── ROADMAP.md            # next steps of the experiment
 ├── docs/
