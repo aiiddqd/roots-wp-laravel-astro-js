@@ -8,7 +8,6 @@ created: 2026-08-28
 
 ## todo
 
-- [ ] start simple JAM Stack SSG - one page + my account page with JWT auth from WP BE
 
 ## Предпосылки
 
